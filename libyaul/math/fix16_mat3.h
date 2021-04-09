@@ -25,7 +25,7 @@ typedef union fix16_mat3 {
         fix16_t arr[9];
         fix16_t frow[3][3];
         fix16_vec3_t row[3];
-} __aligned(64) fix16_mat3_t;
+} __aligned(4) fix16_mat3_t;
 
 extern void fix16_mat3_dup(const fix16_mat3_t *, fix16_mat3_t *);
 extern void fix16_mat3_identity(fix16_mat3_t *);
