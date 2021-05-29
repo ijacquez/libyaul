@@ -36,8 +36,9 @@ extern int cd_block_security_bypass();
  * @param offset        Offset from current FAD.
  * @param buffer_number Number of buffer to start reading.
  * @param output_buffer Buffer where data will be recorded.
+ * @param buffer_length Size of the buffer where data will be recorded.
  */
-extern int cd_block_transfer_data(uint16_t offset, uint16_t buffer_number, uint8_t *output_buffer);
+extern int cd_block_transfer_data(uint16_t offset, uint16_t buffer_number, uint8_t *output_buffer, uint32_t buffer_length);
 
 /**
  * Read a sector to a memory location. This function initialize and spins the

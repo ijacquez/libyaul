@@ -252,7 +252,7 @@ _filelist_entry_populate(const iso9660_dirent_t *dirent, iso9660_entry_type_t ty
                 name_len -= 2;
 
                 /* Empty extension */
-                if (dirent->name[name_len - 1] == '.')
+                if (name_len > 0 && dirent->name[name_len - 1] == '.')
                         name_len--;
         }
 

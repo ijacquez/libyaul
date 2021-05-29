@@ -165,7 +165,7 @@ cd_block_security_bypass(void)
 }
 
 int
-cd_block_transfer_data(uint16_t offset, uint16_t buffer_number, uint8_t *output_buffer)
+cd_block_transfer_data(uint16_t offset, uint16_t buffer_number, uint8_t *output_buffer, uint32_t buffer_length)
 {
         assert(output_buffer != NULL);
 
@@ -185,9 +185,21 @@ cd_block_transfer_data(uint16_t offset, uint16_t buffer_number, uint8_t *output_
         uint16_t *read_buffer;
         read_buffer = (uint16_t *)output_buffer;
 
-        for (uint32_t i = 0; i < (ISO9660_SECTOR_SIZE / 2); i++) {
+        uint32_t bytes_to_read = ISO9660_SECTOR_SIZE;
+        if (bytes_to_read > buffer_length)
+                bytes_to_read = buffer_length;
+
+        uint32_t read_bytes = 0;
+        for (uint32_t i = 0; i < bytes_to_read; i += 2) {
                 *read_buffer = MEMORY_READ(16, CD_BLOCK(DTR));
                 read_buffer++;
+                read_bytes += 2;
+        }
+
+        // If odd number of bytes, read the last one separated
+        if (read_bytes < buffer_length) {
+                uint16_t tmp = MEMORY_READ(16, CD_BLOCK(DTR));
+                output_buffer[buffer_length - 1] = tmp >> 8;
         }
 
         if ((ret = cd_block_cmd_end_data_transfer()) != 0) {
@@ -228,7 +240,7 @@ cd_block_sector_read(uint32_t fad, uint8_t *output_buffer)
         while ((cd_block_cmd_get_sector_number(0)) == 0) {
         }
 
-        if ((ret = cd_block_transfer_data(0, 0, output_buffer)) != 0) {
+        if ((ret = cd_block_transfer_data(0, 0, output_buffer, 2048)) != 0) {
                 return ret;
         }
 
